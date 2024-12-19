@@ -6,34 +6,41 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const correctCredentials = {
+        username: "mor_2314",
+        password: "83r5^_"
+    };
+
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
-    
-        const demoCredentials = {
-            username: "mor_2314",
-            password: "83r5^_"
-        };
-    
+
+        // Check if entered credentials match the correct ones
+        if (username !== correctCredentials.username || password !== correctCredentials.password) {
+            setError('Invalid username or password');
+            setLoading(false);
+            return;
+        }
+
         try {
             const response = await fetch('https://fakestoreapi.com/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(demoCredentials),
+                body: JSON.stringify({ username, password }),
             });
-    
+
             const data = await response.json();
-    
+
             if (response.ok) {
                 console.log('Login success:', data);
                 localStorage.setItem('authToken', data.token);
-                localStorage.setItem('username', demoCredentials.username);
+                localStorage.setItem('username', username);
                 window.location.href = '/';
             } else {
-                setError('Invalid username or password');
+                setError('Error logging in');
             }
         } catch (error) {
             setError('Error logging in');
@@ -41,13 +48,12 @@ const Login = () => {
             setLoading(false);
         }
     };
-    
 
     return (
         <div className="container mt-5">
             <h1 className="text-center">Login</h1>
             <p className="text-center">Login to your account to start shopping!</p>
-            
+
             <div className="row justify-content-center">
                 <div className="col-12 col-md-6">
                     <form onSubmit={handleLogin} className="shadow p-4 border rounded">
@@ -62,7 +68,7 @@ const Login = () => {
                                 required
                             />
                         </div>
-                        
+
                         <div className="mb-3">
                             <label htmlFor="password" className="form-label">Password</label>
                             <input
